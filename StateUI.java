@@ -32,7 +32,7 @@ public class StateUI {
         State newYork = new State("New York", "NY");
         StateInfo newYorkInfo = new StateInfo("Albany", 20201249, 54555.39);
         newYorkInfo.addLandmarkPicture("https://w7.pngwing.com/pngs/524/107/png-transparent-statue-of-liberty-new-york-new-york-city-cities-skylines-news-building-city-skyscraper-thumbnail.png");
-        newYorkInfo.addLandmarkPicture("https://mcscoring.com/AndroidClass/spartans.png");
+        newYorkInfo.addLandmarkPicture("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScQCN5dARPnUfXwmoSaMazD59Qum65Hg216A&s");
         stateMap.put(newYork, newYorkInfo);
         State utah = new State("Utah", "UT");
         StateInfo utahInfo = new StateInfo("Salt Lake City", 3417734, 84900);
