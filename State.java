@@ -20,6 +20,7 @@ public class State {
     }
 
     @Override
+    //generates hashcode
     public int hashCode() {
         return Objects.hash(abbreviation);
     }

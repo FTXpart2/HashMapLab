@@ -1,8 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-
 public class StateUI {
     private JFrame frame;
     private JTextArea textArea;
@@ -10,21 +11,22 @@ public class StateUI {
 
     public StateUI() {
         stateMap = new MyHashMap<>();
-        initializeStateData(); // Initialize with some state data
+        initializeStateData(); 
         initializeUI();
+        viewAllStates();
     }
 
     private void initializeStateData() {
         State california = new State("California", "CA");
         StateInfo californiaInfo = new StateInfo("Sacramento", 39538223, 163696.32);
-        californiaInfo.addLandmarkPicture("https://upload.wikimedia.org/wikipedia/commons/a/a7/Golden_Gate_Bridge%2C_San_Francisco%2C_CA.jpg");
-        californiaInfo.addLandmarkPicture("https://upload.wikimedia.org/wikipedia/commons/e/ec/Yosemite_National_Park_%28cropped%29.jpg");
+        californiaInfo.addLandmarkPicture("https://media.istockphoto.com/id/1137980721/photo/golden-gate-bridge.jpg?s=612x612&w=0&k=20&c=UvJBPbFEA9LiHPfZ8joZ0zrIJzkojm6FvBgzhPjDxrA=");
+        californiaInfo.addLandmarkPicture("https://upload.wikimedia.org/wikipedia/commons/f/f8/Bixby_Bridge_Big_Sur_California_United_States_Landscape_Photography_%28106473129%29.jpeg");
         stateMap.put(california, californiaInfo);
 
         State texas = new State("Texas", "TX");
         StateInfo texasInfo = new StateInfo("Austin", 29145505, 268596.46);
-        texasInfo.addLandmarkPicture("https://upload.wikimedia.org/wikipedia/commons/0/00/Alamo_Exterior.jpg");
-        texasInfo.addLandmarkPicture("https://upload.wikimedia.org/wikipedia/commons/0/0e/Space_Center_Houston_5.jpg");
+        texasInfo.addLandmarkPicture("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnXSANIbWUUuymEU7YQqHrJGvC5kwMaDSAcQ&s");
+        texasInfo.addLandmarkPicture("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNjubPBxNzG-sQwvnc1_-UnkrjLlv8K3V1gg&s");
         stateMap.put(texas, texasInfo);
 
         State newYork = new State("New York", "NY");
@@ -32,6 +34,11 @@ public class StateUI {
         newYorkInfo.addLandmarkPicture("https://w7.pngwing.com/pngs/524/107/png-transparent-statue-of-liberty-new-york-new-york-city-cities-skylines-news-building-city-skyscraper-thumbnail.png");
         newYorkInfo.addLandmarkPicture("https://mcscoring.com/AndroidClass/spartans.png");
         stateMap.put(newYork, newYorkInfo);
+        State utah = new State("Utah", "UT");
+        StateInfo utahInfo = new StateInfo("Salt Lake City", 3417734, 84900);
+        utahInfo.addLandmarkPicture("https://media.istockphoto.com/id/108223280/photo/delicate-arch.jpg?s=612x612&w=0&k=20&c=GrlyxxY1AMozB58qAOZ8Pf9QWHkJU2tUjHOOBp-VJNM=");
+        utahInfo.addLandmarkPicture("https://images.squarespace-cdn.com/content/v1/5bb674d7a0cd273dc676b5e2/1565725607801-9F574387F95ZHITP6QH1/image-asset.jpeg");
+        stateMap.put(utah, utahInfo);
     }
 
     private void initializeUI() {
@@ -88,27 +95,31 @@ public class StateUI {
                 textArea.setText(info.toString());
                 JPanel imagePanel = new JPanel();
                 imagePanel.setLayout(new GridLayout(0, 1)); // One column for images
-
+    
                 // Limit images to a maximum of 2
                 int count = 0;
                 for (String url : info.getLandmarkPictures()) {
-                    if (count < 2) {
-                        try {
-                            ImageIcon icon = new ImageIcon(new URL(url));
-                            if (icon.getIconWidth() > 0) { // Check if image loaded
-                                JLabel label = new JLabel(icon);
-                                imagePanel.add(label);
-                                count++;
-                            } else {
-                                System.err.println("Image not found or invalid URL: " + url);
-                            }
-                        } catch (Exception e) {
-                            System.err.println("Failed to load image from URL: " + url);
-                            e.printStackTrace();
+                    try {
+                        URI uri = URI.create(url); // Create a URI from the URL string
+                        URL imageUrl = uri.toURL(); // Convert the URI to a URL
+                        ImageIcon icon = new ImageIcon(imageUrl);
+                        
+                        if (icon.getIconWidth() > 0) { // Check if image loaded
+                            // Resize the image
+                            Image scaledImage = icon.getImage().getScaledInstance(200, 100, Image.SCALE_SMOOTH);
+                            JLabel label = new JLabel(new ImageIcon(scaledImage)); // Use scaled image
+                            
+                            imagePanel.add(label);
+                            count++;
+                        } else {
+                            System.err.println("Image not found or invalid URL: " + url);
                         }
+                    } catch (Exception e) {
+                        System.err.println("Failed to load image from URL: " + url);
+                        e.printStackTrace();
                     }
                 }
-
+    
                 // Show images in a dialog
                 if (count > 0) {
                     JOptionPane.showMessageDialog(frame, imagePanel, "State Info and Pictures", JOptionPane.INFORMATION_MESSAGE);
@@ -130,12 +141,10 @@ public class StateUI {
                 StateInfo info = stateMap.get(state);
                 if (info != null) {
                     // Check if there are already 2 pictures
-                    if (info.getLandmarkPictures().size() < 2) {
+                  
                         info.addLandmarkPicture(url);
                         textArea.setText("Picture added!");
-                    } else {
-                        textArea.setText("Cannot add more than 2 pictures for this state!");
-                    }
+                    
                 } else {
                     textArea.setText("State not found!");
                 }
